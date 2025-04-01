@@ -1,19 +1,37 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from app.models import Base
+from sqlalchemy.orm import sessionmaker
+from .models import Base
+from urllib.parse import quote_plus
 
-DATABASE_URL = "postgresql://bankruptcy_user:aLTYjEv0OikgFNRkpWo0npeAoxvMMloN@dpg-cvl9h6ffte5s739tr0f0-a.oregon-postgres.render.com/bankruptcy"
+# Encode password properly
+password = "0vwxZ46X2GqzRNAkIdty5J4qa07s1Sa2"
+encoded_password = quote_plus(password)
 
-engine = create_engine(DATABASE_URL)
+DATABASE_URL = f"postgresql://bankruptcy_iucf_user:{encoded_password}@dpg-cvm3v5re5dus73aevum0-a.oregon-postgres.render.com/bankruptcy_iucf?sslmode=require"
+
+engine = create_engine(
+    DATABASE_URL,
+    pool_size=5,
+    max_overflow=10,
+    pool_pre_ping=True,
+    connect_args={
+        "connect_timeout": 10,
+        "keepalives": 1,
+        "keepalives_idle": 30
+    }
+)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create tables if they don't exist
-Base.metadata.create_all(bind=engine)
-
-# Dependency function to get a database session
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+# Optional: Add retry logic for initial connection
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"Warning: Could not create tables on startup: {e}")

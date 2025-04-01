@@ -69,6 +69,8 @@ def train_model(
     logging.info("Training completed successfully")
     return model
 
+
+
 def evaluate_model(
     model: RandomForestClassifier, 
     X_test: np.ndarray, 
@@ -76,51 +78,32 @@ def evaluate_model(
 ) -> Dict[str, Any]:
     """
     Evaluates model performance and returns comprehensive metrics.
-    
-    Args:
-        model: Trained scikit-learn model
-        X_test: Test features
-        y_test: True labels for test set
-        
-    Returns:
-        Dictionary containing:
-        - Basic metrics (accuracy, F1, precision, recall)
-        - Confusion matrix
-        - Full classification report
-        - Feature importances (if available)
     """
     y_pred = model.predict(X_test)
+    cm = confusion_matrix(y_test, y_pred)
     
     metrics = {
         'accuracy': round(accuracy_score(y_test, y_pred), 4),
-        'f1_score': round(f1_score(y_test, y_pred), 4),
         'precision': round(precision_score(y_test, y_pred), 4),
         'recall': round(recall_score(y_test, y_pred), 4),
+        'f1': round(f1_score(y_test, y_pred), 4),
         'confusion_matrix': {
-            'true_negative': int(confusion_matrix(y_test, y_pred)[0, 0]),
-            'false_positive': int(confusion_matrix(y_test, y_pred)[0, 1]),
-            'false_negative': int(confusion_matrix(y_test, y_pred)[1, 0]),
-            'true_positive': int(confusion_matrix(y_test, y_pred)[1, 1])
-        },
-        'classification_report': classification_report(y_test, y_pred, output_dict=True)
+            'true_negative': int(cm[0, 0]),
+            'false_positive': int(cm[0, 1]),
+            'false_negative': int(cm[1, 0]),
+            'true_positive': int(cm[1, 1])
+        }
     }
     
-    # Add feature importances if available
-    if hasattr(model, 'feature_importances_'):
-        metrics['feature_importances'] = dict(zip(
-            model.feature_names_in_ if hasattr(model, 'feature_names_in_') 
-            else [f"feature_{i}" for i in range(X_test.shape[1])],
-            [round(imp, 6) for imp in model.feature_importances_]
-        ))
-    
-    # Log key metrics
     logging.info("\nModel Evaluation:")
     logging.info(f"Accuracy: {metrics['accuracy']}")
-    logging.info(f"F1 Score: {metrics['f1_score']}")
+    logging.info(f"F1 Score: {metrics['f1']}")
     logging.info(f"Precision: {metrics['precision']}")
     logging.info(f"Recall: {metrics['recall']}")
+    logging.info(f"Confusion Matrix:\n{cm}")
     
     return metrics
+
 
 def save_model(
     model: RandomForestClassifier, 
