@@ -21,7 +21,17 @@ def load_model(model_path):
     return model
 
 def predict(data, model):
-    """Makes predictions with proper feature validation"""
+    """
+    Makes predictions with proper feature validation and returns both 
+    class predictions and probabilities.
+    
+    Returns:
+        dict: {
+            'predictions': array of class predictions (0 or 1),
+            'probabilities': array of probabilities for class 1
+        }
+    """
+    # Convert input to DataFrame with proper feature names if needed
     if not isinstance(data, pd.DataFrame):
         if isinstance(data, (list, np.ndarray)):
             data = pd.DataFrame(data, columns=model.feature_names_in_)
@@ -36,7 +46,14 @@ def predict(data, model):
     # Reorder columns to match training
     data = data[model.feature_names_in_]
     
-    return model.predict(data)
+    # Get both predictions and probabilities
+    predictions = model.predict(data)
+    probabilities = model.predict_proba(data)[:, 1]  # Probability of class 1 (bankruptcy)
+    
+    return {
+        'predictions': predictions,
+        'probabilities': probabilities
+    }
 
 if __name__ == "__main__":
     model = load_model("models/random_classifier.pkl")

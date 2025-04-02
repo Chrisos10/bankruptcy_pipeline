@@ -1,0 +1,161 @@
+body {
+    display: flex;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #F4F6F7; /* Subtle professional background */
+    color: #7F8C8D; /* Dark blue for financial professionalism */
+}
+
+nav {
+    width: 250px;
+    height: 100vh;
+    background: linear-gradient(135deg, #1B263B, #2C3E50, #3D5A80); /* Dark blue theme */
+    color: white;
+    padding-top: 20px;
+    position: fixed;
+}
+
+nav h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    color:  #C9B037;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    padding: 15px;
+    text-align: center;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+nav ul li:hover {
+    background-color: #4C5C68; /* Subtle hover effect */
+    border-radius: 10px;
+}
+
+h1 {
+    color: #C9B037; /* Gold color for prestige and emphasis */
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Updated content section to stack elements in a column */
+.content {
+    margin-left: 250px;
+    padding: 5px;
+    background: #EAEDED;
+    border-radius: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    align-items: center; /* Centers everything */
+}
+
+/* Text section containing home and benefits */
+.text-content {
+    width: 100%; /* Now takes full width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Home Section */
+#home {
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 10px;
+    width: 80%; /* Keep it nicely formatted */
+}
+
+/* Home paragraph styles */
+#home p {
+    text-align: justify;
+    margin: 20px;
+    margin-bottom: 20px;
+}
+
+/* Features Section - Same styling as Benefits */
+#features {
+    background-color: #ffffff;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    width: 80%;
+}
+
+/* Features list */
+#features ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: left; /* Align text properly */
+}
+
+/* Individual feature items */
+#features ul li {
+    color: #7F8C8D;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+/* Checkmark styling */
+#features ul li::before {
+    content: "✔";
+    color: #C9B037;
+    font-weight: bold;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+
+/* Image Section - Now in column flow */
+/* Image Section - Now flexbox for side-by-side images */
+/* Image Section - Now flexbox for side-by-side images with spacing */
+#image-section {
+    width: 80%; /* Match the text width */
+    display: flex;
+    justify-content: space-between; /* Creates space between images */
+    align-items: center;
+    margin-top: 30px; /* Space between benefits and images */
+}
+
+/* Image boxes now take slightly less space to leave a gap */
+.image-box {
+    width: 45%; /* Reduced width to create spacing */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Image styling */
+.bankrupt-image {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+

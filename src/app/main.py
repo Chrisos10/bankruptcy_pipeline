@@ -184,8 +184,12 @@ async def predict_single(input_data: BankruptcyInput):
     try:
         input_df = pd.DataFrame([input_data.dict()], columns=EXPECTED_COLUMNS)
         model = load_model(MODEL_PATH)
-        prediction = predict(input_df, model)
-        return {"prediction": int(prediction[0])}
+        results = predict(input_df, model)  # Using the updated predict() function
+        
+        return {
+            "prediction": int(results['predictions'][0]),
+            "probability": float(results['probabilities'][0])
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -194,8 +198,18 @@ async def predict_bulk(file: UploadFile = File(...)):
     try:
         df = load_prediction_data(file)
         model = load_model(MODEL_PATH)
-        predictions = predict(df, model)
-        return {"predictions": predictions.tolist()}
+        results = predict(df, model)
+        
+        # Combine predictions and probabilities into a single array of objects
+        combined_results = [
+            {"prediction": int(pred), "probability": float(prob)}
+            for pred, prob in zip(results['predictions'], results['probabilities'])
+        ]
+        
+        return {
+            "results": combined_results,
+            "count": len(combined_results)
+        }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrain Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="retrain.css">
+</head>
+<body>
+    <nav>
+        <h2>RiskRadar</h2>
+        <ul>
+            <li><a href="main.html">Home</a></li>
+            <li><a href="predict.html">Prediction</a></li>
+            <li><a href="retrain.html">Retrain Model</a></li>
+            <li><a href="visualizations.html">Data Visualizations</a></li>
+        </ul>
+    </nav>
+    
+    <div class="content">
+        <h2>Retrain Model</h2>
+        
+        <!-- Form for uploading dataset -->
+        <form action="#" method="POST" class="retrain-form">
+            <div class="form-item">
+                <label for="dataset-upload">Upload Dataset:</label>
+                <input type="file" id="dataset-upload" name="dataset" required>
+            </div>
+            
+            <!-- Retrain button -->
+            <button type="submit">Retrain Model</button>
+        </form>
+
+        <!-- Model status feedback -->
+        <div class="status" id="status">
+            <p>Waiting for dataset upload...</p>
+        </div>
+
+        <!-- Model metrics display -->
+        <div class="metrics-container">
+            <div class="metrics-box">
+                <h3>Training Metrics</h3>
+                <ul>
+                    <li><strong>Accuracy:</strong> <span id="accuracy">0.00</span></li>
+                    <li><strong>Precision:</strong> <span id="precision">0.00</span></li>
+                    <li><strong>Recall:</strong> <span id="recall">0.00</span></li>
+                    <li><strong>F1-Score:</strong> <span id="f1-score">0.00</span></li>
+                </ul>
+            </div>
+            
+            <div class="metrics-box">
+                <h3>Retraining Metrics</h3>
+                <ul>
+                    <li><strong>Accuracy:</strong> <span id="val-accuracy">0.00</span></li>
+                    <li><strong>Precision:</strong> <span id="val-precision">0.00</span></li>
+                    <li><strong>Recall:</strong> <span id="val-recall">0.00</span></li>
+                    <li><strong>F1-Score:</strong> <span id="val-f1-score">0.00</span></li>
+                </ul>
+            </div>
+        </div>
+        <!-- Add this right after your metrics container -->
+        <div class="save-model">
+            <button id="save-model-btn">Save Retrained Model</button>
+            <p id="save-status"></p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.querySelector(".retrain-form");
+        const statusDiv = document.getElementById("status");
+        const accuracyElem = document.getElementById("accuracy");
+        const precisionElem = document.getElementById("precision");
+        const recallElem = document.getElementById("recall");
+        const f1ScoreElem = document.getElementById("f1-score");
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+            statusDiv.innerHTML = "<p>Retraining in progress...</p>";
+
+            // Simulate the retraining process (this would be replaced with a backend call)
+            setTimeout(() => {
+                // Simulated metrics after retraining
+                const accuracy = 0.85;  // Example value, this would be returned from the model's evaluation
+                const precision = 0.88;
+                const recall = 0.83;
+                const f1Score = 0.85;
+
+                // Display the metrics
+                accuracyElem.textContent = accuracy.toFixed(2);
+                precisionElem.textContent = precision.toFixed(2);
+                recallElem.textContent = recall.toFixed(2);
+                f1ScoreElem.textContent = f1Score.toFixed(2);
+
+                // Show the updated metrics
+                statusDiv.innerHTML = "<p>Model retrained successfully!</p>";
+            }, 2000); // Simulate retraining time with a timeout
+        });
+    </script>
+</body>
+</html>

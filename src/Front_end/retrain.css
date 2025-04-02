@@ -1,0 +1,226 @@
+/* Core Styles from Main */
+body {
+    display: flex;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #F4F6F7;
+    color: #7F8C8D;
+}
+
+nav {
+    width: 250px;
+    height: 100vh;
+    background: linear-gradient(135deg, #1B263B, #2C3E50, #3D5A80);
+    color: white;
+    padding-top: 20px;
+    position: fixed;
+}
+
+nav h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    color:  #C9B037;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    padding: 15px;
+    text-align: center;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+nav ul li:hover {
+    background-color: #4C5C68;
+    border-radius: 10px;
+}
+
+/* Retrain Page Layout */
+.content {
+    padding: 20px;
+    background: #EAEDED;
+    border-radius: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Vertically center content */
+    min-height: 100vh; /* Take full height of viewport */
+    width: calc(100% - 250px); /* Adjust width based on the sidebar width */
+    margin-left: 250px; /* Position the content to the right of the sidebar */
+    box-sizing: border-box; /* Ensure padding is included in width calculation */
+}
+
+/* Form Styling */
+h2 {
+    color: #C9B037;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Form grid layout: 2 columns with added space between them */
+.retrain-form {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    max-width: 1200px; /* Limit the form width */
+    margin: 0 auto; /* Center the form container */
+}
+
+.form-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.form-item label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #2C3E50;
+}
+
+.form-item input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #BDC3C7;
+    border-radius: 5px;
+    width: 100%;
+}
+
+/* Button styling */
+button {
+    background-color: #C9B037;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px; /* Space between the form and the button */
+}
+
+button:hover {
+    background-color: #1B263B;
+}
+
+/* Metrics Styling */
+.metrics {
+    margin-top: 40px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 1000px;
+}
+
+.metrics h3 {
+    color: #2C3E50;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.metrics ul {
+    list-style: none;
+    padding: 0;
+}
+
+.metrics ul li {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.metrics strong {
+    color: #1B263B;
+}
+
+/* Status Styling */
+.status {
+    font-size: 18px;
+    color: #2C3E50;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Metrics Container */
+.metrics-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 80%;
+    max-width: 1000px;
+    margin-top: 40px;
+}
+
+/* Metrics Box */
+.metrics-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.metrics-box h3 {
+    color: #2C3E50;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.metrics-box ul {
+    list-style: none;
+    padding: 0;
+}
+
+.metrics-box ul li {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.metrics-box strong {
+    color: #1B263B;
+}
+
+/* Save Model Button */
+.save-model {
+    width: 80%;
+    max-width: 1200px; /* Matching your form's max-width */
+    margin: 30px auto 0;
+    text-align: center;
+}
+
+#save-model-btn {
+    background-color: #C9B037;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+    width: 100%; /* Makes button full width of its container */
+    display: block; /* Ensures it behaves like the retrain button */
+    box-sizing: border-box; /* Includes padding in width calculation */
+}
+
+#save-model-btn:hover {
+    background-color: #1B263B;
+}
