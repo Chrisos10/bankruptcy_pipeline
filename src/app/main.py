@@ -32,6 +32,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Constants
 EXPECTED_COLUMNS = [
     "retained_earnings_to_total_assets",
@@ -212,6 +213,7 @@ async def predict_bulk(file: UploadFile = File(...)):
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
 @app.post("/retrain/", response_model=RetrainResponse)
 async def retrain_model(db: Session = Depends(get_db)):

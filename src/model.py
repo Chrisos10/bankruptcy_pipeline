@@ -1,10 +1,10 @@
 import pickle
 import logging
+import os
 from datetime import datetime
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import (
-    classification_report, 
     accuracy_score, 
     f1_score, 
     precision_score,
@@ -24,20 +24,11 @@ def train_model(
 ) -> RandomForestClassifier:
     """
     Trains a Random Forest classifier with optional hyperparameter tuning.
-    
-    Args:
-        X_train: Training features (numpy array or pandas DataFrame)
-        y_train: Training labels (numpy array or pandas Series)
-        tune_hyperparameters: Whether to perform grid search (default: True)
-        best_params: Predefined parameters if tuning is skipped (default: None)
-        
-    Returns:
-        Trained Random Forest model
     """
     logging.info("Initializing Random Forest training...")
     model = RandomForestClassifier(
         random_state=42,
-        class_weight='balanced'  # Handles imbalanced classes
+        class_weight='balanced'
     )
 
     if tune_hyperparameters and best_params is None:
@@ -69,8 +60,6 @@ def train_model(
     logging.info("Training completed successfully")
     return model
 
-
-
 def evaluate_model(
     model: RandomForestClassifier, 
     X_test: np.ndarray, 
@@ -97,13 +86,12 @@ def evaluate_model(
     
     logging.info("\nModel Evaluation:")
     logging.info(f"Accuracy: {metrics['accuracy']}")
-    logging.info(f"F1 Score: {metrics['f1']}")
     logging.info(f"Precision: {metrics['precision']}")
     logging.info(f"Recall: {metrics['recall']}")
+    logging.info(f"F1 Score: {metrics['f1']}")
     logging.info(f"Confusion Matrix:\n{cm}")
     
     return metrics
-
 
 def save_model(
     model: RandomForestClassifier, 
@@ -112,22 +100,40 @@ def save_model(
 ) -> None:
     """
     Saves trained model to disk with optional metadata.
-    
-    Args:
-        model: Trained model to save
-        filepath: Full path to save the model (.pkl file)
-        metadata: Optional dictionary of metadata to save
+    Now simplified to just save the model without metrics.
     """
     save_obj = {
         'model': model,
-        'metadata': metadata or {}
+        'metadata': metadata or {
+            'saved_at': datetime.now().isoformat()
+        }
     }
+    
+    # Ensure directory exists
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
     
     logging.info(f"Saving model to {filepath}")
     with open(filepath, "wb") as f:
         pickle.dump(save_obj, f)
     
     logging.info("Model saved successfully")
+
+def load_model(filepath: str) -> RandomForestClassifier:
+    """
+    Loads a saved model from disk.
+    Returns just the model object without metrics.
+    """
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"No model found at {filepath}")
+    
+    logging.info(f"Loading model from {filepath}")
+    with open(filepath, "rb") as f:
+        model_data = pickle.load(f)
+    
+    if 'model' not in model_data:
+        raise ValueError("Invalid model file format")
+    
+    return model_data['model']
 
 if __name__ == "__main__":
     # Example usage
@@ -146,15 +152,15 @@ if __name__ == "__main__":
         # 3. Evaluate
         metrics = evaluate_model(model, X_test, y_test)
         
-        # 4. Save with metadata
+        # 4. Save model (without metrics)
         save_model(
-            model,
-            "models/random_forest_model.pkl",
-            metadata={
-                'training_date': datetime.now().isoformat(),
-                'metrics': metrics
-            }
+            model=model,
+            filepath="models/random_forest_model.pkl"
         )
+        
+        # 5. Example of loading
+        loaded_model = load_model("models/random_forest_model.pkl")
+        logging.info("Model loaded successfully")
         
     except Exception as e:
         logging.error(f"Pipeline failed: {str(e)}")
