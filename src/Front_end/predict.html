@@ -266,18 +266,28 @@
                     body: formData
                 });
 
-                if (!response.ok) throw new Error(`Server error: ${response.status}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `Server error: ${response.status}`);
+                }
                 
                 const result = await response.json();
-                const highRiskCount = result.predictions.filter(p => p.prediction === 1).length;
-                const total = result.predictions.length;
-                const highRiskPercent = Math.round(highRiskCount/total*100);
+                
+                // Check if results exist and is an array
+                if (!result.results || !Array.isArray(result.results)) {
+                    throw new Error("Invalid response format from server");
+                }
+                
+                const predictions = result.results;
+                const highRiskCount = predictions.filter(p => p.prediction === 1).length;
+                const total = predictions.length;
+                const highRiskPercent = total > 0 ? Math.round(highRiskCount/total*100) : 0;
                 
                 // Create summary card
                 const summaryHTML = `
                     <div class="summary-card">
                         <strong>Batch Summary:</strong> Processed ${total} records with 
-                        <span class="${highRiskCount ? 'badge-high' : 'badge-low'}">
+                        <span class="risk-badge ${highRiskCount ? 'badge-high' : 'badge-low'}">
                             ${highRiskCount} high risk (${highRiskPercent}%)
                         </span>
                     </div>
@@ -297,9 +307,11 @@
                 `;
                 
                 // Add each prediction as a row
-                result.predictions.forEach((pred, index) => {
+                predictions.forEach((pred, index) => {
                     const isHighRisk = pred.prediction === 1;
-                    const confidencePercent = Math.round(pred.probability * 100);
+                    const confidencePercent = pred.probability !== undefined && pred.probability !== null 
+                        ? Math.round(pred.probability * 100) 
+                        : 'N/A';
                     
                     tableHTML += `
                         <tr>
