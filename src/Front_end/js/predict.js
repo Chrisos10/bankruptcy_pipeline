@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'https://bankruptcy-pipeline.onrender.com';
 const EXPECTED_FIELDS = [
     "retained_earnings_to_total_assets", 
     "total_debt_per_total_net_worth", 

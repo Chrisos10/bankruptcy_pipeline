@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'https://bankruptcy-pipeline.onrender.com';
         
 // Static metrics from your notebook
 const staticMetrics = {
