@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiskRadar - Data Visualizations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/Front_end/css/main.css">
+    <link rel="stylesheet" href="/src/Front_end/css/visuals.css">
+</head>
+<body>
+    <nav>
+        <h2>RiskRadar</h2>
+        <ul>
+            <li><a href="main.css">Home</a></li>
+            <li><a href="predict.html">Prediction</a></li>
+            <li><a href="retrain.html">Retrain Model</a></li>
+            <li><a href="visuals.html">Data Visualizations</a></li>
+        </ul>
+    </nav>
+    
+    <div class="content">
+        <div class="visualization-container">
+            <div class="visualization-header">
+                <h1>Data Insights & Visualizations</h1>
+                <p>Explore key financial indicators and their relationships to bankruptcy risk</p>
+            </div>
+            
+            <div class="visualization-grid">
+                <!-- Class Balance -->
+                <div class="visualization-card">
+                    <div class="card-header">
+                        <h2>Class Distribution</h2>
+                        <div class="tooltip info-icon">
+                            ⓘ
+                            <span class="tooltiptext">Shows dataset balance between outcomes</span>
+                        </div>
+                    </div>
+                    <div class="visualization-image-container">
+                        <img src="/src/Front_end/images/class_balance.png" alt="Class Balance Chart" class="visualization-image">
+                    </div>
+                    <div class="card-description">
+                        <p><b>Dataset composition analysis:</b></p>
+                        <p>Class balance visualization was crucial in our bankruptcy prediction model to assess whether the dataset was imbalanced, which could lead to even worse biased predictions. By visualizing the distribution of bankrupt and non-bankrupt companies, we ensured that we apply techiques like random-oversampling, allowing for improved generalizations.</p>
+                    </div>
+                </div>
+                
+                <!-- Correlation Matrix -->
+                <div class="visualization-card">
+                    <div class="card-header">
+                        <h2>Feature Correlation</h2>
+                        <div class="tooltip info-icon">
+                            ⓘ
+                            <span class="tooltiptext">Reveals relationships between financial metrics</span>
+                        </div>
+                    </div>
+                    <div class="visualization-image-container">
+                        <img src="/src/Front_end/images/correlation.png" alt="Correlation Matrix" class="visualization-image">
+                    </div>
+                    <div class="card-description">
+                        <p><b>Key correlation insights:</b></p>
+                        <p>The correlation map was essential in our bankruptcy prediction model to identify relationships between financial features and bankruptcy status. By visualizing these correlations, we gained insights into which variables had the strongest influence on predictions.</p>
+                    </div>
+                </div>
+                
+                <!-- Primary Feature Importance Visualization -->
+                <div class="visualization-card">
+                    <div class="card-header">
+                        <h2>Feature Importance (Gini)</h2>
+                        <div class="tooltip info-icon">
+                            ⓘ
+                            <span class="tooltiptext">Measures how much each feature contributes to bankruptcy prediction accuracy</span>
+                        </div>
+                    </div>
+                    <div class="visualization-image-container">
+                        <img src="/src/Front_end/images/feature_importances.jpg" alt="Feature Importance Chart" class="visualization-image">
+                    </div>
+                    <div class="card-description">
+                        <p><b>The Gini Importance chart ranks financial indicators by their predictive power.</b></p>
+                        <p>Visualizing feature importances generate insights for understanding which financial metrics have the most impact on our bankruptcy prediction model. This helpes to focus on the most relevant variables, reduce noise, and enhancing the model’s interpretability and performance.</p>
+                    </div>
+                </div>
+                
+                <!-- Alternative Feature Importance View -->
+                <div class="visualization-card">
+                    <div class="card-header">
+                        <h2>Feature Impact</h2>
+                        <div class="tooltip info-icon">
+                            ⓘ
+                            <span class="tooltiptext">Alternative perspective on feature contributions</span>
+                        </div>
+                    </div>
+                    <div class="visualization-image-container">
+                        <img src="/src/Front_end/images/feature_impacts.jpg" alt="Alternative Feature Importance View" class="visualization-image">
+                    </div>
+                    <div class="card-description">
+                        <p><b>This complementary view highlights:</b></p>
+                        <p>A graph showing how different features impact bankruptcy or no bankruptcy is essential for interpreting the model’s decision-making process. By visualizing feature distributions or their effects on predictions, we can identify key financial indicators that differentiate bankrupt and non-bankrupt companies, which can inform decisions on what to focus on to avoid bankruptcy.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/Front_end/js/visuals.js"></script>
+</body>
+</html>
