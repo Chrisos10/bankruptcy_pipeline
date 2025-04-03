@@ -279,3 +279,69 @@ button:disabled {
     width: 80%;
     max-width: 1200px;
 }
+
+.upload-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* Confusion Matrix Styles */
+.confusion-matrix-container {
+    width: 80%;
+    max-width: 600px;
+    margin: 40px auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.confusion-matrix-container h3 {
+    color: #2C3E50;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    text-align: center;
+}
+
+.matrix-header {
+    font-weight: bold;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+
+.matrix-cell {
+    padding: 15px;
+    background-color: #e3f2fd;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+#true-negative {
+    background-color: #e8f5e9;
+}
+
+#true-positive {
+    background-color: #e8f5e9;
+}
+
+#false-positive {
+    background-color: #ffebee;
+}
+
+#false-negative {
+    background-color: #ffebee;
+}

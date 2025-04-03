@@ -65,7 +65,24 @@
                 </ul>
             </div>
         </div>
-        
+
+        <!-- Confusion Matrix for Retrained Model -->
+        <div class="confusion-matrix-container">
+            <h3>Retrained Model Confusion Matrix</h3>
+            <div class="matrix-grid">
+                <div class="matrix-header"></div>
+                <div class="matrix-header">Predicted Negative</div>
+                <div class="matrix-header">Predicted Positive</div>
+                
+                <div class="matrix-header">Actual Negative</div>
+                <div class="matrix-cell" id="true-negative">-</div>
+                <div class="matrix-cell" id="false-positive">-</div>
+                
+                <div class="matrix-header">Actual Positive</div>
+                <div class="matrix-cell" id="false-negative">-</div>
+                <div class="matrix-cell" id="true-positive">-</div>
+            </div>
+        </div>
         <!-- Save model section -->
         <div class="save-model">
             <button id="save-model-btn" disabled>Save Retrained Model</button>

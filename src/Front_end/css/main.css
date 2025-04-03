@@ -128,14 +128,16 @@ h1 {
 /* Image Section */
 #image-section {
     width: 80%;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 30px;
+    gap: 20px;
 }
 
 /* Image boxes */
 .image-box {
-    width: 45%;
+    width: 100%;
     padding: 20px;
     background-color: #ffffff;
     border-radius: 10px;

@@ -17,6 +17,10 @@ const EXPECTED_FIELDS = [
     "interest_coverage_ratio"
 ];
 
+// Storage keys
+const SINGLE_PREDICTION_KEY = 'singlePredictionData';
+const BULK_PREDICTION_KEY = 'bulkPredictionData';
+
 function initializeFormFields() {
     const formGrid = document.getElementById("formGridContainer");
     formGrid.innerHTML = '';
@@ -46,6 +50,31 @@ function toggleSpinner(spinnerId, show) {
     document.getElementById(spinnerId).style.display = show ? 'block' : 'none';
 }
 
+function saveSinglePredictionToSession(prediction, probability) {
+    sessionStorage.setItem(SINGLE_PREDICTION_KEY, JSON.stringify({
+        prediction,
+        probability,
+        timestamp: new Date().getTime()
+    }));
+}
+
+function saveBulkPredictionToSession(results) {
+    sessionStorage.setItem(BULK_PREDICTION_KEY, JSON.stringify({
+        results,
+        timestamp: new Date().getTime()
+    }));
+}
+
+function loadSinglePredictionFromSession() {
+    const data = sessionStorage.getItem(SINGLE_PREDICTION_KEY);
+    return data ? JSON.parse(data) : null;
+}
+
+function loadBulkPredictionFromSession() {
+    const data = sessionStorage.getItem(BULK_PREDICTION_KEY);
+    return data ? JSON.parse(data) : null;
+}
+
 function showPredictionResult(prediction, probability) {
     const isHighRisk = prediction === 1;
     const resultContainer = document.getElementById("singlePredictionResult");
@@ -61,7 +90,7 @@ function showPredictionResult(prediction, probability) {
     confidenceBar.style.width = `${confidencePercent}%`;
     confidenceBar.style.backgroundColor = isHighRisk ? '#c62828' : '#2e7d32';
     
-    // Set text content (your requested format)
+    // Set text content
     riskPercentage.textContent = isHighRisk
         ? `HIGH RISK (${confidencePercent}% chance of bankruptcy)`
         : `LOW RISK (${confidencePercent}% chance of bankruptcy)`;
@@ -70,6 +99,74 @@ function showPredictionResult(prediction, probability) {
         ? "Immediate attention recommended"
         : "Your financial health appears stable";
     
+    resultContainer.style.display = 'block';
+}
+
+function showBulkPredictionResults(results) {
+    const resultContainer = document.getElementById('bulkPredictionResult');
+    resultContainer.style.display = 'none';
+    resultContainer.innerHTML = '';
+
+    // Check if results exist and is an array
+    if (!results || !Array.isArray(results)) {
+        resultContainer.innerHTML = `
+            <div class="risk-high" style="padding: 15px; text-align: left;">
+                <strong>Error:</strong> Invalid results data
+            </div>
+        `;
+        resultContainer.style.display = 'block';
+        return;
+    }
+    
+    const highRiskCount = results.filter(p => p.prediction === 1).length;
+    const total = results.length;
+    const highRiskPercent = total > 0 ? Math.round(highRiskCount/total*100) : 0;
+    
+    // Create summary card
+    const summaryHTML = `
+        <div class="summary-card">
+            <strong>Batch Summary:</strong> Processed ${total} records with 
+            <span class="risk-badge ${highRiskCount ? 'badge-high' : 'badge-low'}">
+                ${highRiskCount} high risk (${highRiskPercent}%)
+            </span>
+        </div>
+    `;
+    
+    // Create table header
+    let tableHTML = `
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>Record #</th>
+                    <th>Risk Level</th>
+                    <th>Probability</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    // Add each prediction as a row
+    results.forEach((pred, index) => {
+        const isHighRisk = pred.prediction === 1;
+        const confidencePercent = pred.probability !== undefined && pred.probability !== null 
+            ? Math.round(pred.probability * 100) 
+            : 'N/A';
+        
+        tableHTML += `
+            <tr>
+                <td>${index + 1}</td>
+                <td><span class="risk-badge ${isHighRisk ? 'badge-high' : 'badge-low'}">
+                    ${isHighRisk ? 'HIGH RISK' : 'LOW RISK'}
+                </span></td>
+                <td>${confidencePercent}%</td>
+            </tr>
+        `;
+    });
+    
+    tableHTML += `</tbody></table>`;
+    
+    // Combine and display
+    resultContainer.innerHTML = summaryHTML + tableHTML;
     resultContainer.style.display = 'block';
 }
 
@@ -83,10 +180,7 @@ async function handleBulkPrediction(e) {
     }
 
     toggleSpinner('bulkPredictionSpinner', true);
-    const resultContainer = document.getElementById('bulkPredictionResult');
-    resultContainer.style.display = 'none';
-    resultContainer.innerHTML = '';
-
+    
     try {
         const formData = new FormData();
         formData.append("file", fileInput.files[0]);
@@ -108,66 +202,20 @@ async function handleBulkPrediction(e) {
             throw new Error("Invalid response format from server");
         }
         
-        const predictions = result.results;
-        const highRiskCount = predictions.filter(p => p.prediction === 1).length;
-        const total = predictions.length;
-        const highRiskPercent = total > 0 ? Math.round(highRiskCount/total*100) : 0;
+        // Save to session storage
+        saveBulkPredictionToSession(result.results);
         
-        // Create summary card
-        const summaryHTML = `
-            <div class="summary-card">
-                <strong>Batch Summary:</strong> Processed ${total} records with 
-                <span class="risk-badge ${highRiskCount ? 'badge-high' : 'badge-low'}">
-                    ${highRiskCount} high risk (${highRiskPercent}%)
-                </span>
-            </div>
-        `;
-        
-        // Create table header
-        let tableHTML = `
-            <table class="result-table">
-                <thead>
-                    <tr>
-                        <th>Record #</th>
-                        <th>Risk Level</th>
-                        <th>Probability</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-        
-        // Add each prediction as a row
-        predictions.forEach((pred, index) => {
-            const isHighRisk = pred.prediction === 1;
-            const confidencePercent = pred.probability !== undefined && pred.probability !== null 
-                ? Math.round(pred.probability * 100) 
-                : 'N/A';
-            
-            tableHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td><span class="risk-badge ${isHighRisk ? 'badge-high' : 'badge-low'}">
-                        ${isHighRisk ? 'HIGH RISK' : 'LOW RISK'}
-                    </span></td>
-                    <td>${confidencePercent}%</td>
-                </tr>
-            `;
-        });
-        
-        tableHTML += `</tbody></table>`;
-        
-        // Combine and display
-        resultContainer.innerHTML = summaryHTML + tableHTML;
-        resultContainer.style.display = 'block';
+        // Display results
+        showBulkPredictionResults(result.results);
         
     } catch (error) {
         console.error("Bulk prediction error:", error);
-        resultContainer.innerHTML = `
+        document.getElementById('bulkPredictionResult').innerHTML = `
             <div class="risk-high" style="padding: 15px; text-align: left;">
                 <strong>Error:</strong> ${error.message}
             </div>
         `;
-        resultContainer.style.display = 'block';
+        document.getElementById('bulkPredictionResult').style.display = 'block';
     } finally {
         toggleSpinner('bulkPredictionSpinner', false);
     }
@@ -177,7 +225,6 @@ async function handleSinglePrediction(e) {
     e.preventDefault();
     
     toggleSpinner('singlePredictionSpinner', true);
-    document.getElementById('singlePredictionResult').style.display = 'none';
     
     const formData = {};
     EXPECTED_FIELDS.forEach(field => {
@@ -194,6 +241,11 @@ async function handleSinglePrediction(e) {
         if (!response.ok) throw new Error(`Server error: ${response.status}`);
         
         const result = await response.json();
+        
+        // Save to session storage
+        saveSinglePredictionToSession(result.prediction, result.probability);
+        
+        // Display result
         showPredictionResult(result.prediction, result.probability);
         
     } catch (error) {
@@ -204,8 +256,25 @@ async function handleSinglePrediction(e) {
     }
 }
 
+function loadPreviousResults() {
+    // Load single prediction
+    const singlePrediction = loadSinglePredictionFromSession();
+    if (singlePrediction) {
+        showPredictionResult(singlePrediction.prediction, singlePrediction.probability);
+    }
+    
+    // Load bulk prediction
+    const bulkPrediction = loadBulkPredictionFromSession();
+    if (bulkPrediction) {
+        showBulkPredictionResults(bulkPrediction.results);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initializeFormFields();
     document.getElementById("singlePredictionForm").addEventListener("submit", handleSinglePrediction);
     document.getElementById("bulkPredictionForm").addEventListener("submit", handleBulkPrediction);
+    
+    // Load any previous results from session
+    loadPreviousResults();
 });

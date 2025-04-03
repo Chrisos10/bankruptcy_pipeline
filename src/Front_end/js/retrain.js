@@ -1,4 +1,6 @@
 const API_BASE_URL = 'https://bankruptcy-pipeline.onrender.com';
+const SESSION_STORAGE_KEY = 'retrainDataUploaded';
+const METRICS_STORAGE_KEY = 'retrainMetricsData';
         
 // Static metrics from your notebook
 const staticMetrics = {
@@ -13,6 +15,14 @@ const uploadForm = document.getElementById("upload-form");
 const retrainBtn = document.getElementById("retrain-btn");
 const saveBtn = document.getElementById("save-model-btn");
 const statusDiv = document.getElementById("status");
+const uploadIndicator = document.createElement('span');
+uploadIndicator.className = 'upload-indicator';
+uploadIndicator.style.display = 'none';
+
+// Add the indicator near the retrain button if it exists
+if (retrainBtn && retrainBtn.parentNode) {
+    retrainBtn.parentNode.insertBefore(uploadIndicator, retrainBtn.nextSibling);
+}
 
 // Metrics elements
 const accuracyElem = document.getElementById("accuracy");
@@ -24,6 +34,12 @@ const newAccuracyElem = document.getElementById("new-accuracy");
 const newPrecisionElem = document.getElementById("new-precision");
 const newRecallElem = document.getElementById("new-recall");
 const newF1ScoreElem = document.getElementById("new-f1-score");
+
+// Confusion Matrix elements
+const trueNegativeElem = document.getElementById("true-negative");
+const falsePositiveElem = document.getElementById("false-positive");
+const falseNegativeElem = document.getElementById("false-negative");
+const truePositiveElem = document.getElementById("true-positive");
 
 // State
 let currentModelId = null;
@@ -49,6 +65,57 @@ function formatMetric(value) {
     return value !== null && value !== undefined ? value.toFixed(4) : '-';
 }
 
+function setUploadState(uploaded) {
+    if (uploaded) {
+        sessionStorage.setItem(SESSION_STORAGE_KEY, 'true');
+        if (retrainBtn) retrainBtn.disabled = false;
+        uploadIndicator.style.display = 'inline-block';
+    } else {
+        sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        if (retrainBtn) retrainBtn.disabled = true;
+        uploadIndicator.style.display = 'none';
+    }
+}
+
+function updateConfusionMatrix(matrix) {
+    if (!matrix) return;
+    
+    if (trueNegativeElem) trueNegativeElem.textContent = matrix.true_negative || '-';
+    if (falsePositiveElem) falsePositiveElem.textContent = matrix.false_positive || '-';
+    if (falseNegativeElem) falseNegativeElem.textContent = matrix.false_negative || '-';
+    if (truePositiveElem) truePositiveElem.textContent = matrix.true_positive || '-';
+}
+
+function saveMetricsToSession(metrics) {
+    sessionStorage.setItem(METRICS_STORAGE_KEY, JSON.stringify(metrics));
+}
+
+function loadMetricsFromSession() {
+    const metricsData = sessionStorage.getItem(METRICS_STORAGE_KEY);
+    if (metricsData) {
+        return JSON.parse(metricsData);
+    }
+    return null;
+}
+
+function displayRetrainedMetrics(metrics) {
+    if (!metrics) return;
+    
+    // Update new metrics display
+    if (newAccuracyElem) newAccuracyElem.textContent = formatMetric(metrics.accuracy);
+    if (newPrecisionElem) newPrecisionElem.textContent = formatMetric(metrics.precision);
+    if (newRecallElem) newRecallElem.textContent = formatMetric(metrics.recall);
+    if (newF1ScoreElem) newF1ScoreElem.textContent = formatMetric(metrics.f1);
+    
+    // Update confusion matrix
+    if (metrics.confusion_matrix) {
+        updateConfusionMatrix(metrics.confusion_matrix);
+    }
+    
+    // Enable save button
+    if (saveBtn) saveBtn.disabled = false;
+}
+
 // Load current model metrics on page load
 function loadCurrentMetrics() {
     // Display static metrics from notebook
@@ -57,7 +124,20 @@ function loadCurrentMetrics() {
     if (recallElem) recallElem.textContent = formatMetric(staticMetrics.recall);
     if (f1ScoreElem) f1ScoreElem.textContent = formatMetric(staticMetrics.f1);
     
-    updateStatus("Loaded default model metrics", false, true);
+    // Check if data was already uploaded in this session
+    if (sessionStorage.getItem(SESSION_STORAGE_KEY)) {
+        setUploadState(true);
+        updateStatus("Dataset already uploaded in this session. You can retrain the model.", false, true);
+    } else {
+        updateStatus("Upload a dataset to begin retraining process");
+    }
+    
+    // Load and display any previously saved retrain metrics
+    const savedMetrics = loadMetricsFromSession();
+    if (savedMetrics) {
+        displayRetrainedMetrics(savedMetrics);
+        updateStatus("Retrained model metrics loaded from session", false, true);
+    }
 }
 
 // Handle dataset upload
@@ -96,8 +176,8 @@ uploadForm.addEventListener("submit", async function(event) {
         const result = await response.json();
         updateStatus(`Successfully uploaded ${result.records_added} records. ${result.invalid_records} records were invalid.`, false, true);
         
-        // Enable retrain button
-        if (retrainBtn) retrainBtn.disabled = false;
+        // Enable retrain button and store upload state
+        setUploadState(true);
         
     } catch (error) {
         console.error("Upload error:", error);
@@ -134,14 +214,23 @@ retrainBtn.addEventListener("click", async function() {
         const result = await response.json();
         currentModelId = result.model_id;
         
-        // Update new metrics display
-        if (newAccuracyElem) newAccuracyElem.textContent = formatMetric(result.metrics.accuracy);
-        if (newPrecisionElem) newPrecisionElem.textContent = formatMetric(result.metrics.precision);
-        if (newRecallElem) newRecallElem.textContent = formatMetric(result.metrics.recall);
-        if (newF1ScoreElem) newF1ScoreElem.textContent = formatMetric(result.metrics.f1);
+        // Save metrics to session storage
+        saveMetricsToSession({
+            accuracy: result.metrics.accuracy,
+            precision: result.metrics.precision,
+            recall: result.metrics.recall,
+            f1: result.metrics.f1,
+            confusion_matrix: result.metrics.confusion_matrix
+        });
         
-        // Enable save button
-        if (saveBtn) saveBtn.disabled = false;
+        // Display the metrics
+        displayRetrainedMetrics({
+            accuracy: result.metrics.accuracy,
+            precision: result.metrics.precision,
+            recall: result.metrics.recall,
+            f1: result.metrics.f1,
+            confusion_matrix: result.metrics.confusion_matrix
+        });
         
         updateStatus(result.message || "Model retrained successfully!", false, true);
         
@@ -201,6 +290,9 @@ saveBtn.addEventListener("click", async function() {
         if (precisionElem) precisionElem.textContent = formatMetric(staticMetrics.precision);
         if (recallElem) recallElem.textContent = formatMetric(staticMetrics.recall);
         if (f1ScoreElem) f1ScoreElem.textContent = formatMetric(staticMetrics.f1);
+        
+        // Clear the retrained metrics from session storage after saving
+        sessionStorage.removeItem(METRICS_STORAGE_KEY);
         
         if (saveStatus) {
             saveStatus.textContent = result.message || "Model saved successfully!";
