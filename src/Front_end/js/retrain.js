@@ -30,14 +30,19 @@ let currentModelId = null;
 
 // Helper functions
 function toggleSpinner(spinnerId, show) {
-    document.getElementById(spinnerId).style.display = show ? 'block' : 'none';
+    const spinner = document.getElementById(spinnerId);
+    if (spinner) {
+        spinner.style.display = show ? 'block' : 'none';
+    }
 }
 
 function updateStatus(message, isError = false, isSuccess = false) {
-    statusDiv.textContent = message;
-    statusDiv.className = 'status';
-    if (isError) statusDiv.classList.add('error');
-    if (isSuccess) statusDiv.classList.add('success');
+    if (statusDiv) {
+        statusDiv.textContent = message;
+        statusDiv.className = 'status';
+        if (isError) statusDiv.classList.add('error');
+        if (isSuccess) statusDiv.classList.add('success');
+    }
 }
 
 function formatMetric(value) {
@@ -47,20 +52,20 @@ function formatMetric(value) {
 // Load current model metrics on page load
 function loadCurrentMetrics() {
     // Display static metrics from notebook
-    accuracyElem.textContent = formatMetric(staticMetrics.accuracy);
-    precisionElem.textContent = formatMetric(staticMetrics.precision);
-    recallElem.textContent = formatMetric(staticMetrics.recall);
-    f1ScoreElem.textContent = formatMetric(staticMetrics.f1);
+    if (accuracyElem) accuracyElem.textContent = formatMetric(staticMetrics.accuracy);
+    if (precisionElem) precisionElem.textContent = formatMetric(staticMetrics.precision);
+    if (recallElem) recallElem.textContent = formatMetric(staticMetrics.recall);
+    if (f1ScoreElem) f1ScoreElem.textContent = formatMetric(staticMetrics.f1);
     
     updateStatus("Loaded default model metrics", false, true);
 }
 
-// Handle dataset upload (keep this exactly the same)
+// Handle dataset upload
 uploadForm.addEventListener("submit", async function(event) {
     event.preventDefault();
     const fileInput = document.getElementById("dataset-upload");
     
-    if (!fileInput.files.length) {
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
         updateStatus("Please select a file first", true);
         return;
     }
@@ -78,15 +83,21 @@ uploadForm.addEventListener("submit", async function(event) {
         });
         
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || "Upload failed");
+            let errorDetail = "Upload failed";
+            try {
+                const errorData = await response.json();
+                errorDetail = errorData.detail || errorData.message || errorDetail;
+            } catch (e) {
+                console.error("Error parsing error response:", e);
+            }
+            throw new Error(errorDetail);
         }
         
         const result = await response.json();
         updateStatus(`Successfully uploaded ${result.records_added} records. ${result.invalid_records} records were invalid.`, false, true);
         
         // Enable retrain button
-        retrainBtn.disabled = false;
+        if (retrainBtn) retrainBtn.disabled = false;
         
     } catch (error) {
         console.error("Upload error:", error);
@@ -96,7 +107,7 @@ uploadForm.addEventListener("submit", async function(event) {
     }
 });
 
-// Handle retrain button click (keep this the same)
+// Handle retrain button click
 retrainBtn.addEventListener("click", async function() {
     toggleSpinner('retrain-spinner', true);
     updateStatus("Retraining model... This may take a few moments.");
@@ -110,23 +121,29 @@ retrainBtn.addEventListener("click", async function() {
         });
         
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || "Retraining failed");
+            let errorDetail = "Retraining failed";
+            try {
+                const errorData = await response.json();
+                errorDetail = errorData.detail || errorData.message || errorDetail;
+            } catch (e) {
+                console.error("Error parsing error response:", e);
+            }
+            throw new Error(errorDetail);
         }
         
         const result = await response.json();
         currentModelId = result.model_id;
         
         // Update new metrics display
-        newAccuracyElem.textContent = formatMetric(result.metrics.accuracy);
-        newPrecisionElem.textContent = formatMetric(result.metrics.precision);
-        newRecallElem.textContent = formatMetric(result.metrics.recall);
-        newF1ScoreElem.textContent = formatMetric(result.metrics.f1);
+        if (newAccuracyElem) newAccuracyElem.textContent = formatMetric(result.metrics.accuracy);
+        if (newPrecisionElem) newPrecisionElem.textContent = formatMetric(result.metrics.precision);
+        if (newRecallElem) newRecallElem.textContent = formatMetric(result.metrics.recall);
+        if (newF1ScoreElem) newF1ScoreElem.textContent = formatMetric(result.metrics.f1);
         
         // Enable save button
-        saveBtn.disabled = false;
+        if (saveBtn) saveBtn.disabled = false;
         
-        updateStatus(result.message, false, true);
+        updateStatus(result.message || "Model retrained successfully!", false, true);
         
     } catch (error) {
         console.error("Retrain error:", error);
@@ -136,7 +153,7 @@ retrainBtn.addEventListener("click", async function() {
     }
 });
 
-// Handle save model button click (modified to update static metrics)
+// Handle save model button click
 saveBtn.addEventListener("click", async function() {
     if (!currentModelId) {
         updateStatus("No model to save. Please retrain first.", true);
@@ -144,8 +161,10 @@ saveBtn.addEventListener("click", async function() {
     }
     
     const saveStatus = document.getElementById("save-status");
-    saveStatus.textContent = "Saving model...";
-    saveStatus.style.color = "inherit";
+    if (saveStatus) {
+        saveStatus.textContent = "Saving model...";
+        saveStatus.style.color = "inherit";
+    }
     
     try {
         const response = await fetch(`${API_BASE_URL}/save-model/`, {
@@ -159,30 +178,42 @@ saveBtn.addEventListener("click", async function() {
         });
         
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || "Save failed");
+            let errorDetail = "Save failed";
+            try {
+                const errorData = await response.json();
+                errorDetail = errorData.detail || errorData.message || errorDetail;
+            } catch (e) {
+                console.error("Error parsing error response:", e);
+            }
+            throw new Error(errorDetail);
         }
         
+        const result = await response.json();
+        
         // Update our static metrics to match the new model
-        staticMetrics.accuracy = parseFloat(newAccuracyElem.textContent);
-        staticMetrics.precision = parseFloat(newPrecisionElem.textContent);
-        staticMetrics.recall = parseFloat(newRecallElem.textContent);
-        staticMetrics.f1 = parseFloat(newF1ScoreElem.textContent);
+        staticMetrics.accuracy = parseFloat(newAccuracyElem.textContent) || staticMetrics.accuracy;
+        staticMetrics.precision = parseFloat(newPrecisionElem.textContent) || staticMetrics.precision;
+        staticMetrics.recall = parseFloat(newRecallElem.textContent) || staticMetrics.recall;
+        staticMetrics.f1 = parseFloat(newF1ScoreElem.textContent) || staticMetrics.f1;
         
         // Update the current metrics display
-        accuracyElem.textContent = newAccuracyElem.textContent;
-        precisionElem.textContent = newPrecisionElem.textContent;
-        recallElem.textContent = newRecallElem.textContent;
-        f1ScoreElem.textContent = newF1ScoreElem.textContent;
+        if (accuracyElem) accuracyElem.textContent = formatMetric(staticMetrics.accuracy);
+        if (precisionElem) precisionElem.textContent = formatMetric(staticMetrics.precision);
+        if (recallElem) recallElem.textContent = formatMetric(staticMetrics.recall);
+        if (f1ScoreElem) f1ScoreElem.textContent = formatMetric(staticMetrics.f1);
         
-        saveStatus.textContent = "Model saved successfully!";
-        saveStatus.style.color = "#2e7d32";
+        if (saveStatus) {
+            saveStatus.textContent = result.message || "Model saved successfully!";
+            saveStatus.style.color = "#2e7d32";
+        }
         updateStatus("Model saved successfully! Current metrics updated.", false, true);
         
     } catch (error) {
         console.error("Save error:", error);
-        saveStatus.textContent = `Save failed: ${error.message}`;
-        saveStatus.style.color = "#c62828";
+        if (saveStatus) {
+            saveStatus.textContent = `Save failed: ${error.message}`;
+            saveStatus.style.color = "#c62828";
+        }
     }
 });
 

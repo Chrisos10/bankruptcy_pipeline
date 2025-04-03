@@ -290,6 +290,40 @@ def cleanup_expired_models():
     for model_id in expired_ids:
         del trained_models_cache[model_id]
 
+
+@app.post("/save-model/", response_model=SaveResponse)
+async def save_model_endpoint(
+    model_data: dict,  # We'll expect a dict with model_id
+    db: Session = Depends(get_db)
+):
+    """Save a trained model from cache to persistent storage"""
+    try:
+        model_id = model_data.get('model_id')
+        if not model_id:
+            raise HTTPException(400, "Missing model_id")
+        
+        # Get model from cache
+        model_data = trained_models_cache.get(model_id)
+        if not model_data:
+            raise HTTPException(404, "Model not found or expired")
+        
+        # Save to persistent storage
+        save_model(model_data['model'], MODEL_PATH)
+        
+        # Remove from cache (optional)
+        del trained_models_cache[model_id]
+        
+        return SaveResponse(
+            success=True,
+            message="Model saved successfully"
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Bankruptcy Prediction API!"}
