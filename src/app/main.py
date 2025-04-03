@@ -66,7 +66,7 @@ class MetricDetail(BaseModel):
     accuracy: float
     precision: float
     recall: float
-    f1: float  # Note: This must match the key in your metrics dictionary
+    f1: float
     confusion_matrix: ConfusionMatrix
 
 class BankruptcyInput(BaseModel):
@@ -185,7 +185,7 @@ async def predict_single(input_data: BankruptcyInput):
     try:
         input_df = pd.DataFrame([input_data.dict()], columns=EXPECTED_COLUMNS)
         model = load_model(MODEL_PATH)
-        results = predict(input_df, model)  # Using the updated predict() function
+        results = predict(input_df, model)
         
         return {
             "prediction": int(results['predictions'][0]),
@@ -232,7 +232,7 @@ async def retrain_model(db: Session = Depends(get_db)):
         model = train_model(X_train, y_train)
         metrics = evaluate_model(model, X_test, y_test)
         
-        # Debugging: Print the exact metrics structure
+        # Print the exact metrics structure
         print("Metrics received from evaluate_model:", metrics)
         
         # 3. Validate metrics structure before use
@@ -293,7 +293,7 @@ def cleanup_expired_models():
 
 @app.post("/save-model/", response_model=SaveResponse)
 async def save_model_endpoint(
-    model_data: dict,  # We'll expect a dict with model_id
+    model_data: dict,
     db: Session = Depends(get_db)
 ):
     """Save a trained model from cache to persistent storage"""

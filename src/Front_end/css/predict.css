@@ -56,11 +56,11 @@ nav ul li:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Vertically center content */
-    min-height: 100vh; /* Take full height of viewport */
-    width: calc(100% - 250px); /* Adjust width based on the sidebar width */
-    margin-left: 250px; /* Position the content to the right of the sidebar */
-    box-sizing: border-box; /* Ensure padding is included in width calculation */
+    justify-content: center;
+    min-height: 100vh;
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    box-sizing: border-box;
 }
 
 /* Form Styling */
@@ -71,19 +71,19 @@ h2 {
     margin-bottom: 20px;
 }
 
-/* Form grid layout: 2 columns with added space between them */
+/* Form grid layout: 2 columns */
 .prediction-form {
     display: flex;
     flex-direction: column;
     width: 80%;
-    max-width: 1200px; /* Limit the form width */
-    margin: 0 auto; /* Center the form container */
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 columns */
-    gap: 30px; /* Set to 30px for the desired space between columns and rows */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
     width: 100%;
     margin-top: 10px;
 }
@@ -120,7 +120,7 @@ button {
     transition: background-color 0.3s ease;
     margin-top: 20px;
     display: block;
-    width: 50%; /* Make button centered and consistent with file input width */
+    width: 50%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -137,7 +137,7 @@ button:hover {
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     width: 80%;
     max-width: 1200px;
-    margin-top: 40px; /* Space between the prediction form and bulk prediction section */
+    margin-top: 40px;
     text-align: center;
 }
 
@@ -175,7 +175,7 @@ button:hover {
     transition: background-color 0.3s ease;
     margin-top: 20px;
     display: block;
-    width: 50%; /* Make button centered and consistent with file input width */
+    width: 50%;
     margin-left: auto;
     margin-right: auto;
 }

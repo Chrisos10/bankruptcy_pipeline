@@ -71,7 +71,7 @@ h2 {
     margin-bottom: 20px;
 }
 
-/* Form grid layout: 2 columns with added space between them */
+/* Form grid layout: 2 columns */
 .retrain-form {
     display: flex;
     flex-direction: column;

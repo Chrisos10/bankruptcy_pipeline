@@ -29,8 +29,7 @@ def get_db():
         yield db
     finally:
         db.close()
-
-# Optional: Add retry logic for initial connection
+        
 try:
     Base.metadata.create_all(bind=engine)
 except Exception as e:

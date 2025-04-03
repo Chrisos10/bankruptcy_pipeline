@@ -9,9 +9,9 @@ from io import StringIO
 from typing import Union
 
 
-from sqlalchemy.orm import Session  # Add this import
-from src.app import models  # Add this import (adjust path as needed)
-from src.app.database import get_db  # Add this import (adjust path as needed)
+from sqlalchemy.orm import Session
+from src.app import models
+from src.app.database import get_db
 
 
 logging.basicConfig(level=logging.INFO)
@@ -33,7 +33,7 @@ EXPECTED_COLUMNS = [
     "total_income_per_total_expense",
     "interest_expense_ratio",
     "interest_coverage_ratio",
-    "bankrupt"  # Only needed for training
+    "bankrupt"
 ]
 
 def load_data(file_path, clean_columns=True, require_bankrupt=True):
@@ -107,9 +107,9 @@ def load_prediction_data(upload_file: UploadFile):
     try:
         # Read the file content
         content = upload_file.file.read().decode('utf-8')
-        upload_file.file.seek(0)  # Reset file pointer immediately
+        upload_file.file.seek(0)
         
-        # Read CSV (assumes comma-delimited)
+        # Read CSV
         df = pd.read_csv(StringIO(content))
         
         # Verify we have exactly the expected columns (excluding 'bankrupt')
