@@ -4,6 +4,18 @@
 
 This project demonstrates a **Machine Learning (ML) pipeline** for bankruptcy prediction. It features model training, evaluation, and retraining triggers based on new data uploads. The application is fully **dockerized** and offers an interactive web interface for predictions, bulk data uploads, and financial data visualizations.
 
+
+
+## Acessing The Site
+
+Explore how it works at 'https://bankruptcy-pipeline-1.onrender.com'
+
+## Or Wathch The Demo Video
+
+[![Watch the video](https://img.youtube.com/vi/TBP4c9ov6Fs/maxresdefault.jpg)](https://youtu.be/TBP4c9ov6Fs)
+
+### [Watch this video on YouTube](https://youtu.be/TBP4c9ov6Fs)
+
 ## Features
 
 - **Model Prediction**: Predicts bankruptcy risk for single or multiple data points.
@@ -160,12 +172,3 @@ For single predictions, use the following JSON format:
 - **Web Interface**: HTML, CSS, JavaScript
 - **Containerization**: Docker
 - **API Documentation**: OpenAPI (Swagger UI)
-
-## Video Demo
-
-📽 [Watch the demonstration on YouTube](#)
-
-## URL
-
-🔗 [Live Application (if applicable)](#)
-
