@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://bankruptcy_iucf_user:0vwxZ46X2GqzRNAkIdty5J4qa07s1Sa2@dpg-cvm3v5re5dus73aevum0-a.oregon-postgres.render.com/bankruptcy_iucf
+      - DB_SSL_MODE=require
+    command: >
+      sh -c "python -m src.app.database &&
+      uvicorn src.app.main:app --host 0.0.0.0 --port 8000"

@@ -1,13 +1,24 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from .models import Base
-from urllib.parse import quote_plus
+import os
+from dotenv import load_dotenv
+import urllib.parse
 
-# Encode password properly
-password = "0vwxZ46X2GqzRNAkIdty5J4qa07s1Sa2"
-encoded_password = quote_plus(password)
+# Load environment variables
+load_dotenv()
 
-DATABASE_URL = f"postgresql://bankruptcy_iucf_user:{encoded_password}@dpg-cvm3v5re5dus73aevum0-a.oregon-postgres.render.com/bankruptcy_iucf?sslmode=require"
+def get_database_url():
+    # Get credentials from environment
+    db_user = os.getenv("DB_USER", "bankruptcy_iucf_user")
+    db_password = urllib.parse.quote_plus(os.getenv("DB_PASSWORD", ""))
+    db_host = os.getenv("DB_HOST", "dpg-cvm3v5re5dus73aevum0-a.oregon-postgres.render.com")
+    db_name = os.getenv("DB_NAME", "bankruptcy_iucf")
+    
+    # Construct the database URL
+    return f"postgresql://{db_user}:{db_password}@{db_host}/{db_name}?sslmode=require"
+
+DATABASE_URL = get_database_url()
 
 engine = create_engine(
     DATABASE_URL,
@@ -29,8 +40,13 @@ def get_db():
         yield db
     finally:
         db.close()
-        
-try:
-    Base.metadata.create_all(bind=engine)
-except Exception as e:
-    print(f"Warning: Could not create tables on startup: {e}")
+
+def init_db():
+    try:
+        Base.metadata.create_all(bind=engine)
+        print("Database tables initialized")
+    except Exception as e:
+        print(f"Warning: Could not create tables on startup: {e}")
+
+# Initialize database when this module is imported
+init_db()
